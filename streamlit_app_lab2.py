@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+from PyPDF2 import PdfReader
 # Show title and description.
 st.title("Joy's Document question answering for Lab 2")
 st.write(
@@ -31,7 +32,7 @@ else:
         if file_extension == 'txt':
           document = uploaded_file.read().decode()
         elif file_extension == 'pdf':
-          document = read_pdf(uploaded_file)
+          document = PdfReader(uploaded_file)
         else:
           st.error("Unsupported file type.")
         messages = [
