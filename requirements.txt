@@ -1,6 +1,7 @@
 streamlit
 openai
-pypdf
+os
+PyPDF2
 pdfplumber
 chromadb
 pysqlite3-binary
