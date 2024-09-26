@@ -30,16 +30,13 @@ def get_current_weather(location, API_key):
         "humidity": round(humidity, 2),
     }
 
-def main():
-    st.title("Weather Info App")
+location = st.text_input("Enter a location (e.g., 'Syracuse'):")
+API_key = st.secrets["OPENWEATHER_API_KEY"]
 
-    location = st.text_input("Enter a location (e.g., 'Syracuse'):")
-    API_key = st.secrets["OPENWEATHER_API_KEY"]
-
-    if st.button("Get Weather"):
-        if location and API_key:
-            weather_data = get_current_weather(location, API_key)
-            if weather_data:
+if st.button("Get Weather"):
+    if location and API_key:
+        weather_data = get_current_weather(location, API_key)
+        if weather_data:
                 st.subheader(f"Weather in {weather_data['location']}")
                 st.write(f"Temperature: {weather_data['temperature']}°C")
                 st.write(f"Feels like: {weather_data['feels_like']}°C")
@@ -48,6 +45,3 @@ def main():
                 st.write(f"Humidity: {weather_data['humidity']}%")
         else:
             st.error("Please enter both location and API key.")
-
-if __name__ == "__main__":
-    main()
