@@ -1,14 +1,16 @@
 import streamlit as st
 import requests
+import json
+from openai import OpenAI
 
 st.title("Joy's Lab5 Weather App")
 
-def get_current_weather(location, API_key):
+def get_current_weather(location, Openweather_API):
     if "," in location:
         location = location.split(",")[0].strip()
 
     urlbase = "https://api.openweathermap.org/data/2.5/"
-    urlweather = f"weather?q={location}&appid={API_key}"
+    urlweather = f"weather?q={location}&appid={Openweather_API}"
     url = urlbase + urlweather
     response = requests.get(url)
     data = response.json()
@@ -33,11 +35,12 @@ def get_current_weather(location, API_key):
     }
 
 location = st.text_input("Enter a location (e.g., 'Syracuse'):")
-API_key = st.secrets["OPENWEATHER_API_KEY"]
+Openweather_API = st.secrets["OPENWEATHER_API_KEY"]
+Openai_API = st.secrets["OPENAI_API_KEY"]
 
 if st.button("Get Weather"):
-    if location and API_key:
-        weather_data = get_current_weather(location, API_key)
+    if location and Openweather_API:
+        weather_data = get_current_weather(location, Openweather_API)
         if weather_data:
                 st.subheader(f"Weather in {weather_data['location']}")
                 st.write(f"Temperature: {weather_data['temperature']}°C")
@@ -46,7 +49,7 @@ if st.button("Get Weather"):
                 st.write(f"Max Temperature: {weather_data['temp_max']}°C")
                 st.write(f"Humidity: {weather_data['humidity']}%")
         else:
-            st.error("Please enter both location and API key.")
+            st.error("Please enter a valid location.")
 
 
 tools = [
@@ -99,3 +102,60 @@ tools = [
         }
     },
 ]
+
+GPT_MODEL = "gpt-4o-mini"
+client=OpenAI()
+
+def chat_completion_request(messages, tools=None, tool_choice=None, model=GPT_MODEL):
+     try:
+          response = client.chat.completions.create(
+               model=model,
+               messages=messages,
+               tools=tools,
+               tool_choice="auto",
+          )
+          return response
+     except Exception as e:
+          print("Unable to generate ChatCompletion response")
+          print(f"Exception: {e}")
+          return e
+
+#
+messages = []
+messages.append({"role": "system", "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."})
+messages.append({"role": "user", "content": "what is the weather going to be like in San Francisco and Glasgow over the next 4 days"})
+chat_response = chat_completion_request(
+    messages, tools=tools, model=GPT_MODEL
+)
+
+assistant_message = chat_response.choices[0].message.tool_calls
+assistant_message
+
+#
+messages.append({"role": "user", "content": "I'm in Glasgow, Scotland."})
+chat_response = chat_completion_request(
+    messages, tools=tools
+)
+assistant_message = chat_response.choices[0].message
+messages.append(assistant_message)
+assistant_message
+
+#
+messages = []
+messages.append({"role": "system", "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."})
+messages.append({"role": "user", "content": "what is the weather going to be like in Glasgow, Scotland over the next x days"})
+chat_response = chat_completion_request(
+    messages, tools=tools
+)
+assistant_message = chat_response.choices[0].message
+messages.append(assistant_message)
+assistant_message
+
+
+#
+messages.append({"role": "user", "content": "5 days"})
+chat_response = chat_completion_request(
+    messages, tools=tools
+)
+chat_response.choices[0]
+
