@@ -9,7 +9,7 @@ def get_current_weather(location, API_key):
         location = location.split(",")[0].strip()
     
     urlbase = "https://api.openweathermap.org/data/2.5/"
-    urlweather = f"weather?q={location}&appid={"OPENWEATHER_API_KEY"}"
+    urlweather = f"weather?q={location}&appid={API_key}"
     url = urlbase + urlweather
     response = requests.get(url)
     data = response.json()
@@ -26,3 +26,10 @@ def get_current_weather(location, API_key):
         "temp_min": round(temp_min, 2), "temp_max": round(temp_max, 2),
         "humidity": round(humidity, 2)
     }
+
+API_key = st.secrets["OPENWEATHER_API_KEY"]
+location = st.text_area(
+        "Ask the weather of a location:",
+        placeholder="Syracuse, NY")
+
+st.write(get_current_weather(location, API_key))
