@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 
+st.title("Joy's Lab5 Weather App")
+
 def get_current_weather(location, API_key):
     if "," in location:
         location = location.split(",")[0].strip()
@@ -45,3 +47,55 @@ if st.button("Get Weather"):
                 st.write(f"Humidity: {weather_data['humidity']}%")
         else:
             st.error("Please enter both location and API key.")
+
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "format": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "The temperature unit to use. Infer this from the users location.",
+                    },
+                },
+                "required": ["location", "format"],
+            },
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_n_day_weather_forecast",
+            "description": "Get an N-day weather forecast",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "format": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                        "description": "The temperature unit to use. Infer this from the users location.",
+                    },
+                    "num_days": {
+                        "type": "integer",
+                        "description": "The number of days to forecast",
+                    }
+                },
+                "required": ["location", "format", "num_days"]
+            },
+        }
+    },
+]
