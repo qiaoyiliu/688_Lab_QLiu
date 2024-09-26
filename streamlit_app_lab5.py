@@ -17,7 +17,8 @@ def get_current_weather(location, API_key):
     # Extract temperatures & Convert Kelvin to Celsius
     temp = data['main']['temp'] - 273.15
     feels_like = data['main']['feels_like'] - 273.15
-    temp_min = data['main']['temp_min'] - 273.15 temp_max = data['main']['temp_max'] - 273.15
+    temp_min = data['main']['temp_min'] - 273.15 
+    temp_max = data['main']['temp_max'] - 273.15
     humidity = data['main']['humidity']
     return {"location": location,
         "temperature": round(temp, 2),
